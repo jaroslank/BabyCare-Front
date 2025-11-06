@@ -1,0 +1,72 @@
+/* ========================= css/responsive.css ========================= */
+
+/* Tablets em landscape e menores */
+@media (max-width: 1024px) {
+  .bc-header__title {
+    font-size: 1.3rem;
+  }
+  .bc-grid {
+    gap: 14px;
+  }
+  .bc-card__icon {
+    width: 44px;
+  }
+}
+
+/* Tablets em portrait */
+@media (max-width: 820px) {
+  .bc-header__wrap {
+    padding: 0 8px;
+  }
+  .bc-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .bc-card__title {
+    font-size: 0.9rem;
+  }
+  .bc-child__name {
+    font-size: 1rem;
+  }
+}
+
+/* Smartphones grandes */
+@media (max-width: 600px) {
+  .bc-header__title {
+    font-size: 1.1rem;
+  }
+  .bc-card__icon {
+    width: 40px;
+  }
+  .bc-card__title {
+    font-size: 0.85rem;
+  }
+  .bc-child__card {
+    padding: 12px;
+  }
+  .bc-child__avatar img {
+    width: 44px;
+    height: 44px;
+  }
+  .bc-child__pills img {
+    width: 24px;
+  }
+}
+
+/* Smartphones pequenos */
+@media (max-width: 400px) {
+  .bc-grid {
+    grid-template-columns: 1fr;
+  }
+  .bc-card__title {
+    font-size: 0.8rem;
+  }
+  .bc-header__title {
+    font-size: 1rem;
+  }
+  .bc-fab {
+    right: 12px;
+    bottom: 60px;
+    width: 42px;
+    height: 42px;
+  }
+}

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<script src="assets/js/authGuard.js"></script>
+	<title>BabyCare®</title>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="icon" type="image/png" href="assets/img/icons/icons8-aula-96.png">
+	<link rel=" stylesheet" type="text/css" href="assets/fonts/font-awesome-4.7.0/css/font-awesome.min.css">
+	<link rel="stylesheet" type="text/css" href="assets/fonts/font-awesome-4.7.0/css/font-awesome.min.css">
+	<link rel="stylesheet" type="text/css" href="assets/css/main.css">
+	<meta name="google-signin-client_id"
+		content="374681925851-5u5r2ddg9ciu2sb39rop9eb3hu7pot21.apps.googleusercontent.com">
+</head>
+
+<body>
+
+	<div class="limiter">
+		<div class="container-login100">
+			<div class="wrap-login100">
+				<form class="login100-form validate-form">
+					<span class="login100-form-logo">
+						<img src="assets/img/icons/icons8-criança-100.png" alt="">
+					</span>
+
+					<span class="login100-form-title p-b-34 p-t-27">
+						BabyCare - Family Helper
+					</span>
+
+					<div class="container-login100-form-btn">
+						<a href="http://localhost:3000/auth/google" class="login100-form-btn" 
+						   style="text-decoration: none; text-transform: uppercase; letter-spacing: 1px;">
+							<img src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg" 
+								 alt="Google" 
+								 style="width: 20px; height: 20px; margin-right: 15px; background: #fff; padding: 5px; border-radius: 50%;">
+							Login com Google
+						</a>
+					</div>
+					</form>
+			</div>
+		</div>
+	</div>
+
+
+	<div id="dropDownSelect1"></div>
+
+	<script>
+		(function() {
+			const user = sessionStorage.getItem('currentUser');
+			if (user) {
+				console.log('Usuário já logado, redirecionando para o index...');
+				window.location.href = 'index.html';
+			}
+		})();
+	</script>
+	</body>
+
+</html>

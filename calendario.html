@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="no-js">
+<head>
+  <script src="assets/js/authGuard.js"></script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>BabyCare — Calendário</title>
+  <meta name="description" content="Agenda e calendário de rotinas da criança.">
+  <link rel="stylesheet" href="assets/css/style.css">
+  <link rel="stylesheet" href="assets/css/responsive.css">
+  <link rel="stylesheet" href="assets/css/animation.css">
+  <style>
+    /* Estilos específicos do calendário (mínimos, herdam do style.css) */
+    .cal-wrap{background:#f2e9e4;border:1.5px solid #00000030;border-radius:18px;box-shadow:var(--shadow);overflow:hidden}
+    .cal-head{display:flex;align-items:center;justify-content:space-between;padding:10px 12px;background:linear-gradient(#d86f79,#cc5f63);color:#fff}
+    .cal-title{font-weight:800;letter-spacing:.03em}
+    .cal-controls{display:flex;gap:8px}
+    .cal-btn{border:1px solid #00000035;border-radius:10px;background:#ffd6a0;color:#1a1a1a;padding:6px 10px;cursor:pointer}
+    .cal-body{padding:12px;background:#fff}
+    .cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
+    .cal-cell{border:1px solid #00000018;border-radius:10px;min-height:64px;background:#fff;display:flex;flex-direction:column}
+    .cal-cell__day{font-size:.8rem;font-weight:700;padding:6px 8px;color:#333}
+    .cal-cell__ev{margin:0 8px 8px 8px;padding:6px;border-radius:8px;background:#ffe8cc;color:#2d1a00;border:1px dashed #f2b36d}
+    .cal-dow{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-bottom:6px}
+    .cal-dow span{font-size:.78rem;text-align:center;font-weight:700;color:#333}
+  </style>
+</head>
+<body>
+  <header class="bc-header">
+    <div class="bc-header__wrap">
+      <a class="bc-icon-btn" href="index.html" aria-label="Voltar ao menu">
+      <img src="assets/img/icons/sair.png" alt="Voltar"/>
+      </a>
+      <h1 class="bc-header__title">CALENDÁRIO</h1>
+      <button class="bc-icon-btn" id="btn-config" aria-label="Configurações">
+        <img src="assets/img/icons/engrenagem.png" alt="Configurações"/>
+      </button>
+    </div>
+  </header>
+
+  <main class="bc-main">
+    <section class="reveal">
+      <div class="cal-wrap">
+        <div class="cal-head">
+          <div class="cal-title" id="cal-title">Setembro 2025</div>
+          <div class="cal-controls">
+            <button class="cal-btn" id="prev">◀</button>
+            <button class="cal-btn" id="today">Hoje</button>
+            <button class="cal-btn" id="next">▶</button>
+          </div>
+        </div>
+        <div class="cal-body">
+          <div class="cal-dow">
+            <span>Dom</span><span>Seg</span><span>Ter</span><span>Qua</span><span>Qui</span><span>Sex</span><span>Sáb</span>
+          </div>
+          <div class="cal-grid" id="cal-grid" aria-label="Grade do calendário"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="reveal" style="margin-top:16px">
+      <ul class="bc-grid">
+        <li class="bc-card">
+          <div class="bc-card__link" style="grid-template-rows:auto auto">
+            <div style="padding:12px 12px 0 12px">
+              <strong>Consulta Pediatra</strong>
+              <p class="muted" style="margin:6px 0 0 0; color:#333">10:30 — Sala 203</p>
+            </div>
+            <span class="bc-card__title">Hoje</span>
+          </div>
+        </li>
+        <li class="bc-card">
+          <div class="bc-card__link" style="grid-template-rows:auto auto">
+            <div style="padding:12px 12px 0 12px">
+              <strong>Apresentação escolar</strong>
+              <p class="muted" style="margin:6px 0 0 0; color:#333">Amanhã — Auditório</p>
+            </div>
+            <span class="bc-card__title">Próximo</span>
+          </div>
+        </li>
+      </ul>
+    </section>
+  </main>
+
+  <aside class="bc-ribbon" role="note">
+    <p>Toque em um dia para adicionar eventos.</p>
+  </aside>
+
+  <button class="bc-fab" id="btn-fab" aria-label="Ação rápida" data-action="quick-add">+</button>
+
+  <script src="assets/js/script.js" defer></script>
+  <script>
+    (function(){
+      const grid = document.getElementById('cal-grid');
+      const title = document.getElementById('cal-title');
+      const now = new Date();
+      let y = now.getFullYear();
+      let m = now.getMonth();
+
+      function render(){
+        const dt = new Date(y, m, 1);
+        const monthName = dt.toLocaleDateString('pt-BR',{month:'long'});
+        title.textContent = monthName.charAt(0).toUpperCase()+monthName.slice(1)+` ${y}`;
+        grid.innerHTML = '';
+
+        const firstDow = (new Date(y, m, 1)).getDay();
+        const daysInMonth = new Date(y, m+1, 0).getDate();
+
+        // espaços antes do dia 1
+        for(let i=0;i<firstDow;i++){
+          const cell = document.createElement('div');
+          cell.className='cal-cell';
+          grid.appendChild(cell);
+        }
+        // dias
+        for(let d=1; d<=daysInMonth; d++){
+          const cell = document.createElement('div');
+          cell.className='cal-cell';
+          const day = document.createElement('div');
+          day.className='cal-cell__day';
+          day.textContent = d;
+          cell.appendChild(day);
+          // exemplo de evento fictício
+          if(d===now.getDate() && m===now.getMonth() && y===now.getFullYear()){
+            const ev = document.createElement('div');
+            ev.className='cal-cell__ev';
+            ev.textContent='Hoje: Lembrar garrafa de água';
+            cell.appendChild(ev);
+          }
+          // click para adicionar evento simples
+          cell.addEventListener('click',()=>{
+            const txt = prompt('Adicionar evento para '+d+'/'+(m+1)+'/'+y+':');
+            if(!txt) return;
+            const ev = document.createElement('div');
+            ev.className='cal-cell__ev';
+            ev.textContent=txt;
+            cell.appendChild(ev);
+          });
+          grid.appendChild(cell);
+        }
+      }
+
+      document.getElementById('prev').addEventListener('click',()=>{ m--; if(m<0){m=11;y--;} render(); });
+      document.getElementById('next').addEventListener('click',()=>{ m++; if(m>11){m=0;y++;} render(); });
+      document.getElementById('today').addEventListener('click',()=>{ const n=new Date(); y=n.getFullYear(); m=n.getMonth(); render(); });
+
+      render();
+    })();
+  </script>
+</body>
+</html>

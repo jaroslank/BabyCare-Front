@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="no-js">
+<head>
+  <meta charset="utf-8" />
+  
+  <script src="assets/js/authGuard.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>BabyCare — Menu</title>
+  <meta name="description" content="BabyCare — Simplifique e organize a vida com seu filho.">
+
+  <link rel="stylesheet" href="assets/css/style.css">
+  <link rel="stylesheet" href="assets/css/responsive.css">
+  <link rel="stylesheet" href="assets/css/animation.css">
+</head>
+<body>
+  <a class="skip-link" href="#conteudo">Pular para o conteúdo</a>
+
+  <header class="bc-header" id="topo">
+    <div class="bc-header__wrap">
+      <button class="bc-icon-btn" id="btn-menu" aria-label="Abrir menu lateral" data-action="open-drawer">
+        <img src="assets/img/icons/menu.png" alt="Menu" />
+      </button>
+
+      <h1 class="bc-header__title">MENU</h1>
+
+	  <button class="bc-icon-btn" id="btn-config" aria-label="Abrir configurações" data-action="open-settings">
+		  <img src="https://cdn-icons-png.flaticon.com/512/3524/3524659.png" alt="Ajustar" width="24" height="24" />
+      </button>
+
+    </div>
+  </header>
+
+  <main id="conteudo" class="bc-main">
+    </main>
+
+  <script src="assets/js/script.js" defer></script>
+  
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+		const userString = sessionStorage.getItem('currentUser');
+		if (!userString) {
+			// Segurança extra, embora o guard devesse ter pego
+			console.error('Falha ao carregar dados do usuário.');
+			window.location.href = 'login.html';
+			return;
+		}
+		
+		const user = JSON.parse(userString);
+
+		// 1. Encontrar o botão de config e seu container
+		const configBtn = document.getElementById('btn-config');
+		const headerWrap = configBtn.parentElement;
+
+		if (configBtn && headerWrap && user) {
+			// 2. Criar o span para o nome do usuário
+			const userNameEl = document.createElement('span');
+			userNameEl.textContent = user.nome.split(' ')[0]; // Mostra só o primeiro nome
+			userNameEl.style.color = '#fff';
+			userNameEl.style.fontWeight = 'bold';
+			userNameEl.style.marginRight = '10px';
+			userNameEl.style.fontSize = '0.9rem';
+
+			// 3. Criar o novo link de perfil com avatar
+			const profileLink = document.createElement('a');
+			profileLink.href = "configuracoes.html"; // Link para configurações
+			profileLink.className = 'bc-icon-btn'; // Reusa a classe
+			profileLink.setAttribute('aria-label', `Perfil de ${user.nome}`);
+			profileLink.style.padding = '0'; // Remove padding para a imagem caber
+			
+			const avatarImg = document.createElement('img');
+			avatarImg.src = user.avatar_url;
+			avatarImg.alt = `Perfil de ${user.nome}`;
+			avatarImg.style.width = '32px';
+			avatarImg.style.height = '32px';
+			avatarImg.style.borderRadius = '50%';
+			
+			profileLink.appendChild(avatarImg);
+
+			// 4. Adicionar os novos elementos e remover o antigo
+			headerWrap.insertBefore(userNameEl, configBtn);
+			headerWrap.insertBefore(profileLink, configBtn);
+			headerWrap.removeChild(configBtn);
+		}
+    });
+  </script>
+  </body>
+</html>

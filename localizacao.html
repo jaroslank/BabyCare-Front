@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="no-js">
+<head>
+    <script src="assets/js/authGuard.js"></script>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>BabyCare — Onde seu filho está</title>
+    <meta name="description" content="Mapa e status de localização da criança.">
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="assets/css/responsive.css">
+    <link rel="stylesheet" href="assets/css/animation.css">
+    <style>
+        #mapa iframe {
+            width: 100%;
+            height: 100%;
+        }
+    </style>
+</head>
+<body>
+    <header class="bc-header">
+        <div class="bc-header__wrap">
+            <a class="bc-icon-btn" href="index.html" aria-label="Voltar ao menu">
+                <img src="assets/img/icons/sair.png" alt="Voltar"/>
+            </a>
+            <h1 class="bc-header__title">ONDE SEU FILHO ESTÁ</h1>
+            <div class="bc-user-info" style="display: flex; align-items: center; gap: 10px;">
+                <span id="user-name-header" style="color: white; font-size: 14px; font-weight: 500;">Carregando...</span>
+                <img id="user-avatar" src="" alt="Avatar do usuário" style="width: 40px; height: 40px; border-radius: 50%; border: 2px solid white;" />
+            </div>
+        </div>
+    </header>
+
+    <main class="bc-main">
+        <section class="reveal" aria-label="Mapa">
+            <article class="bc-child__card" style="background:#d7e7ff">
+                <header class="bc-child__head">
+                    <div class="bc-child__avatar">
+                        <img src="assets/img/avatar.png" alt="Avatar do João" />
+                    </div>
+                    <div class="bc-child__meta">
+                        <h2 class="bc-child__name">João - 5 anos</h2>
+                        <p class="bc-child__label" style="margin-top:2px">Última atualização: <span id="loc-updated">—</span></p>
+                    </div>
+                </header>
+                <div id="mapa" style="margin-top:12px; border:1px solid #00000030; border-radius:14px; overflow:hidden; background:#fff; height:300px;">
+                    <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3453.6477163013915!2d-51.229411685196566!3d-30.0396009819897!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x95197825a07c3f3f%3A0x6b00c5c404d9b4f9!2sShopping%20Total!5e0!3m2!1spt-BR!2sbr!4v1678235214040!5m2!1spt-BR!2sbr" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+                </div>
+            </article>
+        </section>
+
+        <section class="reveal" aria-label="Locais recentes" style="margin-top:16px">
+            <ul class="bc-grid">
+                <li class="bc-card">
+                    <div class="bc-card__link" style="grid-template-rows:auto auto">
+                        <div style="padding:12px 12px 0 12px">
+                            <strong>Escola Arco-Íris</strong>
+                            <p class="muted" style="margin:6px 0 0 0; color:#333">Chegada: 07:58 • 2,1 km</p>
+                        </div>
+                        <span class="bc-card__title">Atual</span>
+                    </div>
+                </li>
+                <li class="bc-card">
+                    <div class="bc-card__link" style="grid-template-rows:auto auto">
+                        <div style="padding:12px 12px 0 12px">
+                            <strong>Casa</strong>
+                            <p class="muted" style="margin:6px 0 0 0; color:#333">Saída: 07:25</p>
+                        </div>
+                        <span class="bc-card__title">Hoje</span>
+                    </div>
+                </li>
+            </ul>
+        </section>
+    </main>
+
+    <aside class="bc-ribbon" role="note">
+        <p>Localização compartilhada com responsáveis autorizados.</p>
+    </aside>
+
+    <button class="bc-fab" id="btn-fab" aria-label="Ação rápida" data-action="quick-add">+</button>
+
+    <script src="assets/js/script.js" defer></script>
+    <script>
+        // Simulación de geolocalización simple (poderá integrar a APIs reais)
+        (function(){
+            const latEl = document.getElementById('lat');
+            const lngEl = document.getElementById('lng');
+            const upEl  = document.getElementById('loc-updated');
+            const now = new Date();
+            upEl.textContent = now.toLocaleTimeString();
+
+            // Valores fictícios (Porto Alegre)
+            const lat = -30.031; const lng = -51.228;
+            latEl.textContent = lat.toFixed(3);
+            lngEl.textContent = lng.toFixed(3);
+        })();
+    </script>
+</body>
+</html>

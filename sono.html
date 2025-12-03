@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="no-js">
+<head>
+  <script src="assets/js/authGuard.js"></script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>BabyCare — Sono</title>
+  <meta name="description" content="Controle de sono da criança.">
+  <link rel="stylesheet" href="assets/css/style.css">
+  <link rel="stylesheet" href="assets/css/responsive.css">
+  <link rel="stylesheet" href="assets/css/animation.css">
+</head>
+<body>
+  <header class="bc-header">
+    <div class="bc-header__wrap">
+      <a class="bc-icon-btn" href="index.html" aria-label="Voltar ao menu">
+        <img src="assets/img/icons/sair.png" alt="Voltar"/>
+      </a>
+      <h1 class="bc-header__title">SONO</h1>
+      <div class="bc-user-info" style="display: flex; align-items: center; gap: 10px;">
+        <span id="user-name-header" style="color: white; font-size: 14px; font-weight: 500;">Carregando...</span>
+        <img id="user-avatar" src="" alt="Avatar do usuário" style="width: 40px; height: 40px; border-radius: 50%; border: 2px solid white;" />
+      </div>
+    </div>
+  </header>
+
+  <main class="bc-main">
+    <section class="reveal" aria-label="Resumo de sono">
+      <article class="bc-child__card" style="background:#e6f4ff">
+        <header class="bc-child__head">
+          <div class="bc-child__avatar">
+            <img src="assets/img/icons/relogio.png" alt="Sono" /> 
+          </div>
+          <div class="bc-child__meta">
+            <h2 class="bc-child__name">Sono de João</h2>
+            <p class="bc-child__label">Última noite: 8h 15min</p>
+          </div>
+          <div></div>
+        </header>
+        <div style="margin-top:12px">
+          <ul style="list-style:none; margin:0; padding:0">
+            <li style="padding:8px 0; border-bottom:1px solid #ddd"><strong>Hora de dormir:</strong> 21:15</li>
+            <li style="padding:8px 0; border-bottom:1px solid #ddd"><strong>Hora de acordar:</strong> 07:30</li>
+            <li style="padding:8px 0"><strong>Sonecas durante o dia:</strong> 1 (40 min)</li>
+          </ul>
+        </div>
+      </article>
+    </section>
+
+    <section class="reveal" style="margin-top:16px">
+      <ul class="bc-grid">
+        <li class="bc-card">
+          <div class="bc-card__link" style="grid-template-rows:auto auto">
+            <div style="padding:12px">
+              <strong>Rotina consistente</strong>
+              <p class="muted" style="margin:6px 0 0 0; color:#333">Manter horário fixo para dormir</p>
+            </div>
+            <span class="bc-card__title">Dica</span>
+          </div>
+        </li>
+        <li class="bc-card">
+          <div class="bc-card__link" style="grid-template-rows:auto auto">
+            <div style="padding:12px">
+              <strong>Ambiente calmo</strong>
+              <p class="muted" style="margin:6px 0 0 0; color:#333">Quarto escuro e silencioso</p>
+            </div>
+            <span class="bc-card__title">Saúde</span>
+          </div>
+        </li>
+      </ul>
+    </section>
+  </main>
+
+  <aside class="bc-ribbon" role="note">
+    <p>Registre o sono para acompanhar a rotina da criança.</p>
+  </aside>
+
+  <button class="bc-fab" id="btn-fab" aria-label="Ação rápida" data-action="quick-add">+</button>
+
+  <script src="assets/js/script.js" defer></script>
+</body>
+</html>

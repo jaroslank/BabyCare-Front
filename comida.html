@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="no-js">
+<head>
+  <script src="assets/js/authGuard.js"></script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>BabyCare — Comida</title>
+  <meta name="description" content="Cardápio, alergias e registros de refeições.">
+  <link rel="stylesheet" href="assets/css/style.css">
+  <link rel="stylesheet" href="assets/css/responsive.css">
+  <link rel="stylesheet" href="assets/css/animation.css">
+  <style>
+    dialog { 
+      border: none; 
+      border-radius: 16px; 
+      padding: 25px; 
+      width: 90%; 
+      max-width: 450px; 
+      box-shadow: 0 10px 25px rgba(0,0,0,0.2); 
+    }
+    dialog::backdrop { background-color: rgba(0, 0, 0, 0.6); }
+    
+    .dialog-form { display: flex; flex-direction: column; gap: 15px; }
+    .dialog-form h2 { margin: 0 0 10px 0; color: #333; }
+    .dialog-form input, .dialog-form select, .dialog-form textarea { 
+      padding: 12px; 
+      border: 1px solid #ddd; 
+      border-radius: 8px; 
+      font-size: 14px; 
+      font-family: 'Poppins', sans-serif;
+    }
+    .dialog-form textarea { resize: vertical; min-height: 80px; }
+    .dialog-form label { font-size: 13px; color: #666; margin-bottom: -10px; font-weight: 500; }
+    
+    .form-actions { 
+      display: flex; 
+      justify-content: flex-end; 
+      gap: 10px; 
+      margin-top: 10px; 
+    }
+    .btn { 
+      cursor: pointer; 
+      border: none; 
+      padding: 10px 20px; 
+      border-radius: 8px; 
+      font-weight: 600; 
+      font-size: 14px;
+      transition: all 0.3s;
+      font-family: 'Poppins', sans-serif;
+    }
+    .btn:hover { transform: translateY(-2px); box-shadow: 0 4px 8px rgba(0,0,0,0.15); }
+    .btn-primary { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; }
+    .btn-success { background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%); color: white; }
+    .btn-danger { background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%); color: white; }
+    .btn-secondary { background: #95a5a6; color: white; }
+    .btn-small { padding: 6px 12px; font-size: 13px; }
+    
+    .add-button { 
+      position: fixed; 
+      bottom: 30px; 
+      right: 30px; 
+      width: 60px; 
+      height: 60px; 
+      border-radius: 50%; 
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+      color: white; 
+      border: none; 
+      font-size: 30px; 
+      cursor: pointer; 
+      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+      transition: all 0.3s;
+      z-index: 100;
+    }
+    .add-button:hover { 
+      transform: scale(1.1) rotate(90deg); 
+      box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+    }
+    
+    .meal-card {
+      background: white;
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 16px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      transition: all 0.3s;
+      display: block !important;
+      visibility: visible !important;
+      opacity: 1 !important;
+    }
+    .meal-card:hover {
+      box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+      transform: translateY(-2px);
+    }
+    .meal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 12px;
+    }
+    .meal-info h3 {
+      margin: 0 0 5px 0;
+      color: #2c3e50;
+      font-size: 18px;
+    }
+    .meal-info .child-name {
+      color: #7f8c8d;
+      font-size: 14px;
+      font-weight: 500;
+    }
+    .meal-badge {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+    .meal-details {
+      color: #555;
+      font-size: 14px;
+      line-height: 1.6;
+      margin-bottom: 12px;
+    }
+    .meal-meta {
+      display: flex;
+      gap: 15px;
+      color: #95a5a6;
+      font-size: 13px;
+      margin-bottom: 12px;
+    }
+    .meal-actions {
+      display: flex;
+      gap: 8px;
+      justify-content: flex-end;
+    }
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: #95a5a6;
+      display: block !important;
+    }
+    .empty-state img {
+      width: 120px;
+      opacity: 0.3;
+      margin-bottom: 20px;
+    }
+    
+    /* Garantir que a seção seja visível */
+    #refeicoes-list {
+      display: block !important;
+      visibility: visible !important;
+    }
+  </style>
+</head>
+
+<body>
+  <header class="bc-header">
+    <div class="bc-header__wrap">
+      <a class="bc-icon-btn" href="index.html" aria-label="Voltar ao menu">
+        <img src="assets/img/icons/sair.png" alt="Voltar"/> 
+      </a>
+      <h1 class="bc-header__title">COMIDA</h1>
+      <div class="bc-user-info" style="display: flex; align-items: center; gap: 10px;">
+        <span id="user-name-header" style="color: white; font-size: 14px; font-weight: 500;">Carregando...</span>
+        <img id="user-avatar" src="" alt="Avatar do usuário" style="width: 40px; height: 40px; border-radius: 50%; border: 2px solid white;" />
+      </div>
+    </div>
+  </header>
+
+  <main class="bc-main" style="padding-bottom: 100px;">
+    <section id="refeicoes-list" class="reveal" style="margin-top:16px; padding: 0 16px; min-height: 200px;">
+      <!-- As refeições serão inseridas aqui dinamicamente -->
+    </section>
+  </main>
+
+  <!-- Botão flutuante para adicionar -->
+  <button class="add-button" id="show-create-modal" aria-label="Adicionar refeição">+</button>
+
+  <!-- Modal para criar refeição -->
+  <dialog id="create-meal-dialog">
+    <form id="create-meal-form" class="dialog-form">
+      <h2>➕ Nova Refeição</h2>
+      
+      <label for="create-crianca">Criança</label>
+      <select id="create-crianca" name="crianca_id" required>
+        <option value="">Selecione uma criança...</option>
+      </select>
+      
+      <label for="create-tipo">Tipo de Refeição</label>
+      <input type="text" id="create-tipo" name="tipo_refeicao" placeholder="Ex: Café da manhã, Almoço, Lanche..." required>
+      
+      <label for="create-descricao">Descrição</label>
+      <textarea id="create-descricao" name="descricao" placeholder="Descreva o que foi servido..."></textarea>
+      
+      <label for="create-horario">Horário</label>
+      <input type="time" id="create-horario" name="horario" required>
+      
+      <label for="create-data">Data</label>
+      <input type="date" id="create-data" name="data" required>
+      
+      <div class="form-actions">
+        <button type="button" class="btn btn-secondary" id="cancel-create">Cancelar</button>
+        <button type="submit" class="btn btn-success">Salvar</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- Modal para editar refeição -->
+  <dialog id="update-meal-dialog">
+    <form id="update-meal-form" class="dialog-form">
+      <h2>✏️ Editar Refeição</h2>
+      <input type="hidden" id="update-id" name="id">
+      
+      <label for="update-crianca">Criança</label>
+      <select id="update-crianca" name="crianca_id" required>
+        <option value="">Selecione uma criança...</option>
+      </select>
+      
+      <label for="update-tipo">Tipo de Refeição</label>
+      <input type="text" id="update-tipo" name="tipo_refeicao" placeholder="Ex: Café da manhã, Almoço..." required>
+      
+      <label for="update-descricao">Descrição</label>
+      <textarea id="update-descricao" name="descricao" placeholder="Descreva o que foi servido..."></textarea>
+      
+      <label for="update-horario">Horário</label>
+      <input type="time" id="update-horario" name="horario" required>
+      
+      <label for="update-data">Data</label>
+      <input type="date" id="update-data" name="data" required>
+      
+      <div class="form-actions">
+        <button type="button" class="btn btn-secondary" id="cancel-update">Cancelar</button>
+        <button type="submit" class="btn btn-primary">Atualizar</button>
+      </div>
+    </form>
+  </dialog>
+
+  <script>
+    const API_URL = 'http://localhost:3000/api';
+    
+    const refeicoesContainer = document.getElementById('refeicoes-list');
+    const createDialog = document.getElementById('create-meal-dialog');
+    const updateDialog = document.getElementById('update-meal-dialog');
+    const createForm = document.getElementById('create-meal-form');
+    const updateForm = document.getElementById('update-meal-form');
+    
+    let criancasCache = [];
+    
+    // Controles dos modais
+    document.getElementById('show-create-modal').addEventListener('click', () => {
+      populateChildrenSelect('create-crianca');
+      createDialog.showModal();
+    });
+    document.getElementById('cancel-create').addEventListener('click', () => createDialog.close());
+    document.getElementById('cancel-update').addEventListener('click', () => updateDialog.close());
+    
+    // Carregar lista de crianças
+    async function loadChildren() {
+      console.log('🔄 Carregando lista de crianças...');
+      try {
+        const response = await fetch(`${API_URL}/criancas`, { credentials: 'include' });
+        console.log('📡 Resposta do servidor:', response.status);
+        if (response.ok) {
+          criancasCache = await response.json();
+          console.log('✅ Crianças carregadas:', criancasCache.length);
+        } else {
+          console.warn('⚠️ Erro ao carregar crianças:', response.status);
+        }
+      } catch (error) {
+        console.error('❌ Erro ao carregar crianças:', error);
+      }
+    }
+    
+    // Preencher select de crianças
+    function populateChildrenSelect(selectId) {
+      const select = document.getElementById(selectId);
+      select.innerHTML = '<option value="">Selecione uma criança...</option>';
+      criancasCache.forEach(child => {
+        const option = document.createElement('option');
+        option.value = child.id;
+        option.textContent = child.nome;
+        select.appendChild(option);
+      });
+    }
+    
+    // Buscar nome da criança
+    function getChildName(criancaId) {
+      const child = criancasCache.find(c => c.id === criancaId);
+      return child ? child.nome : 'Criança não encontrada';
+    }
+    
+    // Criar refeição
+    createForm.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      
+      const formData = {
+        crianca_id: document.getElementById('create-crianca').value,
+        tipo_refeicao: document.getElementById('create-tipo').value,
+        descricao: document.getElementById('create-descricao').value,
+        horario: document.getElementById('create-horario').value,
+        data: document.getElementById('create-data').value
+      };
+      
+      try {
+        const response = await fetch(`${API_URL}/refeicoes`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify(formData)
+        });
+        
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.message || 'Erro ao criar refeição');
+        }
+        
+        alert('✅ Refeição cadastrada com sucesso!');
+        createForm.reset();
+        createDialog.close();
+        fetchMeals();
+      } catch (error) {
+        alert('❌ Erro: ' + error.message);
+      }
+    });
+    
+    // Atualizar refeição
+    updateForm.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      const id = document.getElementById('update-id').value;
+      
+      const formData = {
+        crianca_id: document.getElementById('update-crianca').value,
+        tipo_refeicao: document.getElementById('update-tipo').value,
+        descricao: document.getElementById('update-descricao').value,
+        horario: document.getElementById('update-horario').value,
+        data: document.getElementById('update-data').value
+      };
+      
+      try {
+        const response = await fetch(`${API_URL}/refeicoes/${id}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify(formData)
+        });
+        
+        if (!response.ok) throw new Error('Falha ao atualizar.');
+        
+        alert('✅ Refeição atualizada!');
+        updateDialog.close();
+        fetchMeals();
+      } catch (error) {
+        alert('❌ ' + error.message);
+      }
+    });
+    
+    // Mostrar modal de edição
+    function showUpdateModal(meal) {
+      document.getElementById('update-id').value = meal.id;
+      populateChildrenSelect('update-crianca');
+      document.getElementById('update-crianca').value = meal.crianca_id;
+      document.getElementById('update-tipo').value = meal.tipo_refeicao || '';
+      document.getElementById('update-descricao').value = meal.descricao || '';
+      document.getElementById('update-horario').value = meal.horario;
+      document.getElementById('update-data').value = meal.data.split('T')[0];
+      updateDialog.showModal();
+    }
+    
+    // Deletar refeição
+    async function deleteMeal(id) {
+      if (!confirm('🗑️ Tem certeza que deseja excluir esta refeição?')) return;
+      
+      try {
+        const response = await fetch(`${API_URL}/refeicoes/${id}`, {
+          method: 'DELETE',
+          credentials: 'include'
+        });
+        if (!response.ok) throw new Error('Falha ao excluir.');
+        alert('✅ Refeição excluída!');
+        fetchMeals();
+      } catch (error) {
+        alert('❌ ' + error.message);
+      }
+    }
+    
+    // Buscar e exibir refeições
+    async function fetchMeals() {
+      console.log('🍽️ Iniciando busca de refeições...');
+      refeicoesContainer.innerHTML = '<p style="text-align:center; color:#95a5a6; padding:40px;">Carregando...</p>';
+      
+      try {
+        const response = await fetch(`${API_URL}/refeicoes`, { credentials: 'include' });
+        console.log('📡 Resposta de refeições:', response.status);
+        
+        if (response.status === 401) {
+          console.warn('⚠️ Usuário não autenticado');
+          refeicoesContainer.innerHTML = '<div class="empty-state"><p>Você não está logado.</p></div>';
+          return;
+        }
+        
+        const meals = await response.json();
+        console.log('✅ Refeições recebidas:', meals.length, meals);
+        refeicoesContainer.innerHTML = '';
+        
+        if (meals.length === 0) {
+          console.log('ℹ️ Nenhuma refeição encontrada');
+          refeicoesContainer.innerHTML = `
+            <div class="empty-state">
+              <img src="assets/img/icons/jantar.png" alt="Sem refeições">
+              <h3>Nenhuma refeição registrada</h3>
+              <p>Clique no botão + para adicionar uma refeição</p>
+            </div>
+          `;
+          return;
+        }
+        
+        meals.forEach((meal, index) => {
+          console.log(`🔄 Processando refeição ${index + 1}:`, meal);
+          const dataObj = new Date(meal.data);
+          const dataFormatada = dataObj.toLocaleDateString('pt-BR', { timeZone: 'UTC' });
+          const childName = getChildName(meal.crianca_id);
+          console.log(`👶 Nome da criança: ${childName}`);
+          
+          const card = document.createElement('article');
+          card.className = 'meal-card reveal';
+          card.innerHTML = `
+            <div class="meal-header">
+              <div class="meal-info">
+                <h3>${meal.tipo_refeicao || 'Refeição'}</h3>
+                <p class="child-name">👶 ${childName}</p>
+              </div>
+              <span class="meal-badge">${meal.horario}</span>
+            </div>
+            <div class="meal-details">
+              ${meal.descricao || '<em>Sem descrição</em>'}
+            </div>
+            <div class="meal-meta">
+              <span>📅 ${dataFormatada}</span>
+            </div>
+            <div class="meal-actions">
+              <button class="btn btn-primary btn-small edit-btn">✏️ Editar</button>
+              <button class="btn btn-danger btn-small delete-btn">🗑️ Excluir</button>
+            </div>
+          `;
+          
+          card.querySelector('.edit-btn').addEventListener('click', () => showUpdateModal(meal));
+          card.querySelector('.delete-btn').addEventListener('click', () => deleteMeal(meal.id));
+          
+          refeicoesContainer.appendChild(card);
+        });
+        console.log('✅ Todas as refeições foram renderizadas');
+      } catch (error) {
+        console.error('❌ Erro ao buscar refeições:', error);
+        refeicoesContainer.innerHTML = `<div class="empty-state"><p style="color: #e74c3c;">❌ Erro ao buscar refeições: ${error.message}</p></div>`;
+      }
+    }
+    
+    // Definir data de hoje como padrão
+    document.getElementById('create-data').valueAsDate = new Date();
+    
+    // Carregar dados ao abrir a página
+    document.addEventListener('DOMContentLoaded', async () => {
+      console.log('🚀 Página carregada, iniciando sistema...');
+      try {
+        await loadChildren();
+        await fetchMeals();
+        console.log('✅ Sistema iniciado com sucesso');
+      } catch (error) {
+        console.error('❌ Erro ao inicializar:', error);
+      }
+    });
+  </script>
+  <script src="assets/js/script.js" defer></script>
+</body>
+</html>

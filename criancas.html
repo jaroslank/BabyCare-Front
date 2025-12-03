@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="no-js">
+<head>
+    <script src="assets/js/authGuard.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BabyCare - Meus Filhos</title>
+    
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="assets/css/responsive.css">
+    <link rel="stylesheet" href="assets/css/animation.css">
+
+    <style>
+        .child-card {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            transition: all 0.3s;
+            display: flex !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .child-card:hover {
+            box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+            transform: translateY(-2px);
+        }
+        .child-info h3 {
+            margin: 0 0 5px 0;
+            color: #2c3e50;
+            font-size: 18px;
+        }
+        .child-info .birth-date {
+            color: #7f8c8d;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        .child-actions {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .btn { 
+            cursor: pointer; 
+            border: none; 
+            padding: 10px 20px; 
+            border-radius: 8px; 
+            font-weight: 600; 
+            font-size: 14px;
+            transition: all 0.3s;
+            font-family: 'Poppins', sans-serif;
+        }
+        .btn:hover { transform: translateY(-2px); box-shadow: 0 4px 8px rgba(0,0,0,0.15); }
+        .btn-primary { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; }
+        .btn-success { background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%); color: white; }
+        .btn-danger { background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%); color: white; }
+        .btn-secondary { background: #95a5a6; color: white; }
+        .btn-small { padding: 6px 12px; font-size: 13px; }
+        
+        .add-button { 
+            position: fixed; 
+            bottom: 30px; 
+            right: 30px; 
+            width: 60px; 
+            height: 60px; 
+            border-radius: 50%; 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+            color: white; 
+            border: none; 
+            font-size: 30px; 
+            cursor: pointer; 
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+            transition: all 0.3s;
+            z-index: 100;
+        }
+        .add-button:hover { 
+            transform: scale(1.1) rotate(90deg); 
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+        }
+
+        dialog { 
+            border: none; 
+            border-radius: 16px; 
+            padding: 25px; 
+            width: 90%; 
+            max-width: 450px; 
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2); 
+        }
+        dialog::backdrop { background-color: rgba(0, 0, 0, 0.6); }
+        
+        .dialog-form { display: flex; flex-direction: column; gap: 15px; }
+        .dialog-form h2 { margin: 0 0 10px 0; color: #333; }
+        .dialog-form input { 
+            padding: 12px; 
+            border: 1px solid #ddd; 
+            border-radius: 8px; 
+            font-size: 14px; 
+            font-family: 'Poppins', sans-serif;
+        }
+        .dialog-form label { font-size: 13px; color: #666; margin-bottom: -10px; font-weight: 500; }
+        
+        .form-actions { 
+            display: flex; 
+            justify-content: flex-end; 
+            gap: 10px; 
+            margin-top: 10px; 
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #95a5a6;
+        }
+        .empty-state img {
+            width: 120px;
+            opacity: 0.3;
+            margin-bottom: 20px;
+        }
+        
+        /* Garantir que a seção seja visível */
+        #children-list {
+            display: block !important;
+            visibility: visible !important;
+        }
+    </style>
+</head>
+<body>
+    <header class="bc-header">
+        <div class="bc-header__wrap">
+            <a class="bc-icon-btn" href="index.html" aria-label="Voltar ao menu">
+                <img src="assets/img/icons/sair.png" alt="Voltar"/> 
+            </a>
+            <h1 class="bc-header__title">MEUS FILHOS</h1>
+            <div class="bc-user-info" style="display: flex; align-items: center; gap: 10px;">
+                <span id="user-name-header" style="color: white; font-size: 14px; font-weight: 500;">Carregando...</span>
+                <img id="user-avatar" src="" alt="Avatar do usuário" style="width: 40px; height: 40px; border-radius: 50%; border: 2px solid white;" />
+            </div>
+        </div>
+    </header>
+
+    <main class="bc-main" style="padding-bottom: 100px;">
+        <section id="children-list" class="reveal" style="margin-top:16px; padding: 0 16px; min-height: 200px;">
+            <!-- As crianças serão inseridas aqui dinamicamente -->
+        </section>
+    </main>
+
+    <!-- Botão flutuante para adicionar -->
+    <button class="add-button" id="show-create-modal-btn" aria-label="Adicionar filho">+</button>
+
+    <dialog id="create-child-dialog">
+        <form id="create-child-form" class="dialog-form">
+            <h2>👶 Nova Criança</h2>
+            <input type="text" id="create-nome" name="nome" placeholder="Nome da criança" required>
+            <label for="create-nascimento">Data de Nascimento</label>
+            <input type="date" id="create-nascimento" name="data_nascimento" required>
+            <div class="form-actions">
+                <button type="button" class="btn btn-secondary" id="cancel-create-btn">Cancelar</button>
+                <button type="submit" class="btn btn-success">Salvar</button>
+            </div>
+        </form>
+    </dialog>
+
+    <dialog id="update-child-dialog">
+        <form id="update-child-form" class="dialog-form">
+            <h2>✏️ Editar Informações</h2>
+            <input type="hidden" id="update-id" name="id">
+            <input type="text" id="update-nome" name="nome" placeholder="Nome da criança" required>
+            <label for="update-nascimento">Data de Nascimento</label>
+            <input type="date" id="update-nascimento" name="data_nascimento" required>
+            <div class="form-actions">
+                <button type="button" class="btn btn-secondary" id="cancel-update-btn">Cancelar</button>
+                <button type="submit" class="btn btn-primary">Atualizar</button>
+            </div>
+        </form>
+    </dialog>
+
+    <script>
+        const API_URL = 'http://localhost:3000/api'; 
+
+        const childrenContainer = document.getElementById('children-list');
+        const createDialog = document.getElementById('create-child-dialog');
+        const updateDialog = document.getElementById('update-child-dialog');
+        const createForm = document.getElementById('create-child-form');
+        const updateForm = document.getElementById('update-child-form');
+
+        // Controles dos Modais
+        document.getElementById('show-create-modal-btn').addEventListener('click', () => createDialog.showModal());
+        document.getElementById('cancel-create-btn').addEventListener('click', () => createDialog.close());
+        document.getElementById('cancel-update-btn').addEventListener('click', () => updateDialog.close());
+
+        function showUpdateModal(child) {
+            document.getElementById('update-id').value = child.id;
+            document.getElementById('update-nome').value = child.nome;
+            
+            // O backend retorna algo como "2020-05-15T00:00:00.000Z".
+            // Precisamos cortar para "2020-05-15" para o input type="date" funcionar.
+            const dataFormatada = child.data_nascimento ? child.data_nascimento.split('T')[0] : '';
+            document.getElementById('update-nascimento').value = dataFormatada;
+            
+            updateDialog.showModal();
+        }
+
+        // --- INTEGRAÇÃO COM A API ---
+
+        // CREATE (POST /criancas)
+        createForm.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            
+            // Pega os valores dos inputs
+            const nome = document.getElementById('create-nome').value;
+            const data_nascimento = document.getElementById('create-nascimento').value;
+
+            try {
+                // Envia para o Backend
+                const response = await fetch(`${API_URL}/criancas`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include', // Envia o cookie da sessão do Google Login
+                    // IMPORTANTE: Aqui usamos os nomes exatos que o controller espera
+                    body: JSON.stringify({ nome, data_nascimento }) 
+                });
+                
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.message || 'Erro ao criar');
+                }
+                
+                alert('Criança cadastrada com sucesso!');
+                createForm.reset();
+                createDialog.close();
+                fetchChildren(); // Recarrega a tabela
+            } catch (error) {
+                alert('Erro: ' + error.message);
+            }
+        });
+
+        // UPDATE (PUT /criancas/:id)
+        updateForm.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const id = document.getElementById('update-id').value;
+            const nome = document.getElementById('update-nome').value;
+            const data_nascimento = document.getElementById('update-nascimento').value;
+
+            try {
+                const response = await fetch(`${API_URL}/criancas/${id}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
+                    body: JSON.stringify({ nome, data_nascimento })
+                });
+
+                if (!response.ok) throw new Error('Falha ao atualizar.');
+
+                alert('Dados atualizados com sucesso!');
+                updateDialog.close();
+                fetchChildren();
+            } catch (error) {
+                alert(error.message);
+            }
+        });
+
+        // DELETE (DELETE /criancas/:id)
+        async function deleteChild(id) {
+            if (!confirm('🗑️ Tem certeza que deseja remover esta criança?')) return;
+
+            try {
+                const response = await fetch(`${API_URL}/criancas/${id}`, {
+                    method: 'DELETE',
+                    credentials: 'include'
+                });
+                if (!response.ok) throw new Error('Falha ao excluir.');
+                alert('✅ Criança removida!');
+                fetchChildren();
+            } catch (error) {
+                alert('❌ ' + error.message);
+            }
+        }
+
+        // READ (GET /criancas)
+        async function fetchChildren() {
+            console.log('👶 Iniciando busca de crianças...');
+            childrenContainer.innerHTML = '<p style="text-align:center; color:#95a5a6; padding:40px;">Carregando...</p>';
+            try {
+                const response = await fetch(`${API_URL}/criancas`, { credentials: 'include' });
+                console.log('📡 Resposta do servidor:', response.status);
+                console.log('📡 Resposta do servidor:', response.status);
+                
+                if (response.status === 401) {
+                    console.warn('⚠️ Usuário não autenticado');
+                    childrenContainer.innerHTML = '<div class="empty-state"><p>Você não está logado.</p></div>';
+                    return;
+                }
+                
+                const children = await response.json();
+                console.log('✅ Crianças recebidas:', children.length, children);
+                childrenContainer.innerHTML = '';
+                
+                if(children.length === 0) {
+                    console.log('ℹ️ Nenhuma criança encontrada');
+                    childrenContainer.innerHTML = `
+                        <div class="empty-state">
+                            <h3>Nenhuma criança cadastrada</h3>
+                            <p>Clique no botão + para adicionar</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                children.forEach((child, index) => {
+                    console.log(`🔄 Processando criança ${index + 1}:`, child);
+                    const dataObj = new Date(child.data_nascimento);
+                    const dataExibicao = dataObj.toLocaleDateString('pt-BR', {timeZone: 'UTC'});
+
+                    const card = document.createElement('article');
+                    card.className = 'child-card reveal';
+                    card.innerHTML = `
+                        <div class="child-info">
+                            <h3>👶 ${child.nome}</h3>
+                            <p class="birth-date">📅 Nascimento: ${dataExibicao}</p>
+                        </div>
+                        <div class="child-actions">
+                            <button class="btn btn-primary btn-small edit-btn">✏️ Editar</button>
+                            <button class="btn btn-danger btn-small delete-btn">🗑️ Excluir</button>
+                        </div>
+                    `;
+                    
+                    card.querySelector('.edit-btn').addEventListener('click', () => showUpdateModal(child));
+                    card.querySelector('.delete-btn').addEventListener('click', () => deleteChild(child.id));
+                    
+                    childrenContainer.appendChild(card);
+                });
+                console.log('✅ Todas as crianças foram renderizadas');
+            } catch (error) {
+                console.error('❌ Erro ao buscar dados:', error);
+                childrenContainer.innerHTML = `<div class="empty-state"><p style="color: #e74c3c;">❌ Erro ao buscar dados.</p></div>`;
+                console.error(error);
+            }
+        }
+
+        // Carrega a lista ao abrir a página
+        document.addEventListener('DOMContentLoaded', async () => {
+            console.log('🚀 Página carregada, iniciando sistema...');
+            try {
+                await fetchChildren();
+                console.log('✅ Sistema iniciado com sucesso');
+            } catch (error) {
+                console.error('❌ Erro ao inicializar:', error);
+            }
+        });
+    </script>
+    <script src="assets/js/script.js" defer></script>
+</body>
+</html>

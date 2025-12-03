@@ -1,0 +1,106 @@
+<!-- ========================= index.html ========================= -->
+<!DOCTYPE html>
+<html lang="pt-BR" class="no-js">
+<head>
+  <meta charset="utf-8" />
+  <script src="assets/js/authGuard.js" defer></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>BabyCare — Menu</title>
+  <meta name="description" content="BabyCare — Simplifique e organize a vida com seu filho.">
+
+  <!-- CSS externo (enviar depois): css/style.css, css/responsive.css, css/animation.css -->
+  <link rel="stylesheet" href="assets/css/style.css">
+  <link rel="stylesheet" href="assets/css/responsive.css">
+  <link rel="stylesheet" href="assets/css/animation.css">
+</head>
+<body>
+  <a class="skip-link" href="#conteudo">Pular para o conteúdo</a>
+
+  <!-- HEADER (barra gradiente com hambúrguer à esquerda, título e avatar/nome do usuário à direita) -->
+  <header class="bc-header" id="topo">
+    <div class="bc-header__wrap">
+      <a class="bc-icon-btn" href="faq.html" aria-label="Ajuda e FAQ">
+        <img src="assets/img/icons/faq.png" alt="FAQ" style="filter: hue-rotate(180deg);" />
+      </a>
+
+      <h1 class="bc-header__title">MENU</h1>
+
+      <div class="bc-user-info" style="display: flex; align-items: center; gap: 10px;">
+        <span id="user-name-header" style="color: white; font-size: 14px; font-weight: 500;">Carregando...</span>
+        <img id="user-avatar" src="" alt="Avatar do usuário" style="width: 40px; height: 40px; border-radius: 50%; border: 2px solid white;" />
+      </div>
+
+    </div>
+  </header>
+
+  <main id="conteudo" class="bc-main">
+    <!-- GRID DE ATALHOS (2 colunas no mobile como no wireframe) -->
+    <section class="bc-shortcuts" aria-label="Atalhos principais">
+      <ul class="bc-grid">
+        <!-- 1. Onde seu filho está -->
+        <li class="bc-card">
+          <a class="bc-card__link" href="localizacao.html">
+            <img class="bc-card__icon" src="assets/img/icons/lugar.png" alt="Onde seu filho está" />
+            <span class="bc-card__title">Onde seu filho está</span>
+          </a>
+        </li>
+        <!-- 2. Calendário -->
+        <li class="bc-card">
+        <a class="bc-card__link" href="calendario.html">
+        <img class="bc-card__icon" src="assets/img/icons/calendario.png" alt="Calendário" />
+        <span class="bc-card__title">Calendário</span>
+        </a>
+
+        </li>
+        <!-- 3. Refeição -->
+        <li class="bc-card">
+          <a class="bc-card__link" href="refeicao.html">
+            <img class="bc-card__icon" src="assets/img/icons/jantar.png" alt="Refeição" />
+            <span class="bc-card__title">Refeições</span>
+          </a>
+        </li>
+        <!-- 4. Ele já dormiu 
+        <li class="bc-card">
+          <a class="bc-card__link" href="paginas/sono.html">
+            <img class="bc-card__icon" src="Css/imagen/relogio.png" alt="Ele já dormiu" />
+            <span class="bc-card__title">Ele já dormiu</span>
+          </a>
+        </li>
+        -->
+        <!-- 5. Dúvidas Frequentes -->
+        <li class="bc-card">
+          <a class="bc-card__link" href="criancas.html">
+            <img class="bc-card__icon" src="assets/img/icons/bebe.png" alt="Meus Filhos" />
+            <span class="bc-card__title">Meus Filhos</span>
+          </a>
+        </li>
+        <li class="bc-card">
+          <a class="bc-card__link" href="remedios.html">
+            <img class="bc-card__icon" src="assets/img/icons/remedio.png" alt="Remédios" />
+            <span class="bc-card__title">Remédios</span>
+          </a>
+        </li>
+        <li class="bc-card">
+          <a class="bc-card__link" href="telefones.html">
+            <img class="bc-card__icon" src="assets/img/icons/telefone.png" alt="Telefones de Emergência" />
+            <span class="bc-card__title">Telefones De Emergência</span>
+          </a>
+        </li>
+      </ul>
+    </section>
+
+  </main>
+
+  <!-- BARRA INFORMATIVA INFERIOR (ribbon) -->
+  <aside class="bc-ribbon" role="note">
+    <p>Simplifique e organize a sua vida e a do seu filho!</p>
+  </aside>
+
+  <!-- Botão flutuante global (canto inferior direito) -->
+
+  <!-- JS externo (enviar depois): js/script.js -->
+  <script src="assets/js/script.js" defer></script>
+
+</body>
+</html>

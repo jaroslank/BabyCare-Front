@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <script src="assets/js/authGuard.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Usuários</title>
+    <meta name="description" content="BabyCare — Simplifique e organize a vida com seu filho.">
+    <style>
+        body { font-family: sans-serif; margin: 20px; background-color: #f4f7f9; }
+        h1 { color: #333; }
+        .header-actions { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #e0e0e0; padding-bottom: 10px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
+        th { background-color: #f8f8f8; }
+        tr:nth-child(even) { background-color: #f2f2f2; }
+        tr:hover { background-color: #e9e9e9; }
+        button { cursor: pointer; border: none; padding: 8px 12px; border-radius: 4px; color: white; font-weight: bold; transition: background-color 0.3s; }
+        .delete-btn { background-color: #dc3545; }
+        .delete-btn:hover { background-color: #c82333; }
+        .update-btn { background-color: #007bff; margin-right: 5px; }
+        .update-btn:hover { background-color: #0069d9; }
+        .create-btn { background-color: #28a745; font-size: 16px; padding: 10px 15px;}
+        .create-btn:hover { background-color: #218838; }
+        dialog { border: 1px solid #ccc; border-radius: 8px; padding: 20px; width: 400px; box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
+        dialog::backdrop { background-color: rgba(0, 0, 0, 0.5); }
+        form { display: flex; flex-direction: column; gap: 15px; }
+        form input { padding: 10px; border: 1px solid #ccc; border-radius: 4px; }
+        .form-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 10px;}
+    </style>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="assets/css/responsive.css">
+    <link rel="stylesheet" href="assets/css/animation.css">
+</head>
+<body>
+    <div class="header-actions">
+        <h1>Painel de Gerenciamento de Usuários</h1>
+        <button id="show-create-modal-btn" class="create-btn">Criar Novo Usuário</button>
+    </div>
+    <p>Bem-vindo! Aqui está a lista de usuários cadastrados.</p>
+
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nome</th>
+                <th>Email</th>
+                <th>Ação</th>
+            </tr>
+        </thead>
+        <tbody id="user-table-body">
+            <!-- Linhas de usuários serão inseridas aqui -->
+        </tbody>
+    </table>
+
+    <!-- Modal de Criação -->
+    <dialog id="create-user-dialog">
+        <form id="create-user-form">
+            <h2>Criar Novo Usuário</h2>
+            <input type="text" id="create-nome" name="nome" placeholder="Nome completo" required>
+            <input type="email" id="create-email" name="email" placeholder="E-mail do usuário" required>
+            <input type="password" id="create-senha" name="senha" placeholder="Senha" required>
+            <div class="form-actions">
+                <button type="button" id="cancel-create-btn">Cancelar</button>
+                <button type="submit">Salvar</button>
+            </div>
+        </form>
+    </dialog>
+
+    <!-- Modal de Atualização -->
+    <dialog id="update-user-dialog">
+        <form id="update-user-form">
+            <h2>Atualizar Usuário</h2>
+            <input type="hidden" id="update-id" name="id">
+            <input type="text" id="update-nome" name="nome" placeholder="Nome completo" required>
+            <input type="email" id="update-email" name="email" placeholder="E-mail do usuário" required>
+            <div class="form-actions">
+                <button type="button" id="cancel-update-btn">Cancelar</button>
+                <button type="submit">Atualizar</button>
+            </div>
+        </form>
+    </dialog>
+
+    <script>
+        const API_URL = 'http://localhost:3000';
+
+        // Elementos do DOM
+        const tableBody = document.getElementById('user-table-body');
+        const createDialog = document.getElementById('create-user-dialog');
+        const updateDialog = document.getElementById('update-user-dialog');
+        const createForm = document.getElementById('create-user-form');
+        const updateForm = document.getElementById('update-user-form');
+
+        // --- LÓGICA DOS MODAIS ---
+        document.getElementById('show-create-modal-btn').addEventListener('click', () => createDialog.showModal());
+        document.getElementById('cancel-create-btn').addEventListener('click', () => createDialog.close());
+        document.getElementById('cancel-update-btn').addEventListener('click', () => updateDialog.close());
+
+        function showUpdateModal(user) {
+            document.getElementById('update-id').value = user.id;
+            document.getElementById('update-nome').value = user.nome;
+            document.getElementById('update-email').value = user.email;
+            updateDialog.showModal();
+        }
+
+        // --- FUNÇÕES DA API (CRUD) ---
+
+        // CREATE
+        createForm.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const nome = document.getElementById('create-nome').value;
+            const email = document.getElementById('create-email').value;
+            const senha = document.getElementById('create-senha').value; // Captura a senha
+
+            try {
+                const response = await fetch(`${API_URL}/usuarios`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ nome, email, senha }) // CORREÇÃO: Envia a senha
+                });
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.message || 'Falha ao criar usuário.');
+                }
+                
+                alert('Usuário criado com sucesso!');
+                createForm.reset();
+                createDialog.close();
+                fetchUsers();
+            } catch (error) {
+                alert(error.message);
+            }
+        });
+
+        // UPDATE
+        updateForm.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const id = document.getElementById('update-id').value;
+            const nome = document.getElementById('update-nome').value;
+            const email = document.getElementById('update-email').value;
+
+            try {
+                const response = await fetch(`${API_URL}/usuarios/${id}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
+                    body: JSON.stringify({ nome, email })
+                });
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.message || 'Falha ao atualizar usuário.');
+                }
+
+                alert('Usuário atualizado com sucesso!');
+                updateDialog.close();
+                fetchUsers();
+            } catch (error) {
+                alert(error.message);
+            }
+        });
+
+        // DELETE
+        async function deleteUser(id) {
+            if (!confirm(`Tem certeza de que deseja excluir o usuário com ID ${id}?`)) return;
+
+            try {
+                // CORREÇÃO: Rota ajustada para /usuarios/:id
+                const response = await fetch(`${API_URL}/usuarios/${id}`, {
+                    method: 'DELETE',
+                    credentials: 'include'
+                });
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.message || 'Falha ao deletar o usuário.');
+                }
+                alert('Usuário deletado com sucesso!');
+                fetchUsers();
+            } catch (error) {
+                alert(error.message);
+            }
+        }
+
+        // READ (Fetch all)
+        async function fetchUsers() {
+            tableBody.innerHTML = '<tr><td colspan="4">Carregando...</td></tr>';
+            try {
+                const response = await fetch(`${API_URL}/usuarios`, { credentials: 'include' });
+                if (response.status === 401) {
+                    alert('Sessão expirada. Por favor, faça login novamente.');
+                    // Idealmente, redirecionar para uma página de login
+                    // window.location.href = '/login.html'; 
+                    tableBody.innerHTML = '<tr><td colspan="4">Você não está autenticado.</td></tr>';
+                    return;
+                }
+                if (!response.ok) throw new Error('Falha ao carregar os dados dos usuários.');
+
+                const users = await response.json();
+                tableBody.innerHTML = '';
+                
+                users.forEach(user => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${user.id}</td>
+                        <td>${user.nome}</td>
+                        <td>${user.email}</td>
+                        <td>
+                            <button class="update-btn">Atualizar</button>
+                            <button class="delete-btn">Excluir</button>
+                        </td>
+                    `;
+                    // Adiciona os eventos de clique nos botões da linha recém-criada
+                    row.querySelector('.update-btn').addEventListener('click', () => showUpdateModal(user));
+                    row.querySelector('.delete-btn').addEventListener('click', () => deleteUser(user.id));
+                    tableBody.appendChild(row);
+                });
+            } catch (error) {
+                tableBody.innerHTML = `<tr><td colspan="4" style="color: red;">${error.message}</td></tr>`;
+            }
+        }
+
+        // Carregamento inicial
+        document.addEventListener('DOMContentLoaded', fetchUsers);
+    </script>
+</body>
+</html>

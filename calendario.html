@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="no-js">
+<head>
+  <script src="assets/js/authGuard.js"></script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>BabyCare — Calendário</title>
+  <meta name="description" content="Agenda e calendário de rotinas da criança.">
+  <link rel="stylesheet" href="assets/css/style.css">
+  <link rel="stylesheet" href="assets/css/responsive.css">
+  <link rel="stylesheet" href="assets/css/animation.css">
+  <style>
+    .calendar-container {
+      margin: 16px;
+      padding: 20px;
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+    .event-card {
+      background: white;
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 12px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+      border-left: 4px solid #667eea;
+      transition: all 0.3s;
+    }
+    .event-card:hover {
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      transform: translateX(4px);
+    }
+    .event-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: #2c3e50;
+      margin-bottom: 8px;
+    }
+    .event-description {
+      font-size: 14px;
+      color: #7f8c8d;
+      margin-bottom: 8px;
+    }
+    .event-time {
+      font-size: 13px;
+      color: #95a5a6;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .event-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 12px;
+    }
+    .btn-small {
+      padding: 6px 12px;
+      font-size: 13px;
+    }
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: #95a5a6;
+    }
+    dialog { 
+      border: none; 
+      border-radius: 16px; 
+      padding: 25px; 
+      width: 90%; 
+      max-width: 450px; 
+      box-shadow: 0 10px 25px rgba(0,0,0,0.2); 
+    }
+    dialog::backdrop { background-color: rgba(0, 0, 0, 0.6); }
+    
+    .dialog-form { display: flex; flex-direction: column; gap: 15px; }
+    .dialog-form h2 { margin: 0 0 10px 0; color: #333; }
+    .dialog-form input, .dialog-form select, .dialog-form textarea { 
+      padding: 12px; 
+      border: 1px solid #ddd; 
+      border-radius: 8px; 
+      font-size: 14px; 
+      font-family: 'Poppins', sans-serif;
+    }
+    .dialog-form textarea { resize: vertical; min-height: 80px; }
+    .dialog-form label { font-size: 13px; color: #666; margin-bottom: -10px; font-weight: 500; }
+    
+    .form-actions { 
+      display: flex; 
+      justify-content: flex-end; 
+      gap: 10px; 
+      margin-top: 10px; 
+    }
+    .btn { 
+      cursor: pointer; 
+      border: none; 
+      padding: 10px 20px; 
+      border-radius: 8px; 
+      font-weight: 600; 
+      font-size: 14px;
+      transition: all 0.3s;
+      font-family: 'Poppins', sans-serif;
+    }
+    .btn:hover { transform: translateY(-2px); box-shadow: 0 4px 8px rgba(0,0,0,0.15); }
+    .btn-primary { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; }
+    .btn-success { background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%); color: white; }
+    .btn-secondary { background: #95a5a6; color: white; }
+    
+    .add-button { 
+      position: fixed; 
+      bottom: 30px; 
+      right: 30px; 
+      width: 60px; 
+      height: 60px; 
+      border-radius: 50%; 
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+      color: white; 
+      border: none; 
+      font-size: 30px; 
+      cursor: pointer; 
+      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+      transition: all 0.3s;
+      z-index: 100;
+    }
+    .add-button:hover { 
+      transform: scale(1.1) rotate(90deg); 
+      box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+    }
+  </style>
+</head>
+<body>
+  <header class="bc-header">
+    <div class="bc-header__wrap">
+      <a class="bc-icon-btn" href="index.html" aria-label="Voltar ao menu">
+        <img src="assets/img/icons/sair.png" alt="Voltar"/>
+      </a>
+      <h1 class="bc-header__title">CALENDÁRIO</h1>
+      <div class="bc-user-info" style="display: flex; align-items: center; gap: 10px;">
+        <span id="user-name-header" style="color: white; font-size: 14px; font-weight: 500;">Carregando...</span>
+        <img id="user-avatar" src="" alt="Avatar do usuário" style="width: 40px; height: 40px; border-radius: 50%; border: 2px solid white;" />
+      </div>
+    </div>
+  </header>
+
+  <main class="bc-main" style="padding-bottom: 100px;">
+    <section class="reveal">
+      <div class="calendar-container">
+        <h2 style="margin: 0 0 20px 0; color: #2c3e50;">📅 Próximos Eventos</h2>
+        <div id="events-list">
+          <p style="text-align: center; color: #95a5a6; padding: 40px;">Carregando eventos...</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <aside class="bc-ribbon" role="note">
+    <p>Eventos sincronizados com seu Google Calendar</p>
+  </aside>
+
+  <button class="add-button" id="show-create-modal" aria-label="Adicionar evento">+</button>
+
+  <!-- Modal para criar evento -->
+  <dialog id="create-event-dialog">
+    <form id="create-event-form" class="dialog-form">
+      <h2>📅 Novo Evento</h2>
+      
+      <label for="create-titulo">Título do Evento</label>
+      <input type="text" id="create-titulo" name="titulo" placeholder="Ex: Consulta pediatra, Vacina..." required>
+      
+      <label for="create-descricao">Descrição</label>
+      <textarea id="create-descricao" name="descricao" placeholder="Detalhes do evento..."></textarea>
+      
+      <label for="create-data-inicio">Data e Hora de Início</label>
+      <input type="datetime-local" id="create-data-inicio" name="data_inicio" required>
+      
+      <label for="create-data-fim">Data e Hora de Término</label>
+      <input type="datetime-local" id="create-data-fim" name="data_fim" required>
+      
+      <div class="form-actions">
+        <button type="button" class="btn btn-secondary" id="cancel-create">Cancelar</button>
+        <button type="submit" class="btn btn-success">Criar Evento</button>
+      </div>
+    </form>
+  </dialog>
+
+  <script>
+    const API_URL = 'http://localhost:3000/api';
+    
+    const createDialog = document.getElementById('create-event-dialog');
+    const createForm = document.getElementById('create-event-form');
+    const eventsContainer = document.getElementById('events-list');
+    
+    // Controles do modal
+    document.getElementById('show-create-modal').addEventListener('click', () => {
+      // Define data/hora padrão como agora
+      const now = new Date();
+      const oneHourLater = new Date(now.getTime() + 60 * 60 * 1000);
+      
+      document.getElementById('create-data-inicio').value = formatDateTimeLocal(now);
+      document.getElementById('create-data-fim').value = formatDateTimeLocal(oneHourLater);
+      
+      createDialog.showModal();
+    });
+    
+    document.getElementById('cancel-create').addEventListener('click', () => createDialog.close());
+    
+    // Função para formatar data para datetime-local input
+    function formatDateTimeLocal(date) {
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+      const hours = String(date.getHours()).padStart(2, '0');
+      const minutes = String(date.getMinutes()).padStart(2, '0');
+      return `${year}-${month}-${day}T${hours}:${minutes}`;
+    }
+    
+    // Função para formatar data para exibição
+    function formatDisplayDateTime(dateString) {
+      const date = new Date(dateString);
+      return date.toLocaleString('pt-BR', {
+        day: '2-digit',
+        month: 'short',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+    }
+    
+    // Buscar e exibir eventos
+    async function fetchEvents() {
+      console.log('🔄 Buscando eventos do Google Calendar...');
+      eventsContainer.innerHTML = '<p style="text-align: center; color: #95a5a6; padding: 40px;">Carregando eventos...</p>';
+      
+      try {
+        const response = await fetch(`${API_URL}/calendario/eventos`, {
+          credentials: 'include'
+        });
+        
+        console.log('📡 Resposta:', response.status);
+        
+        if (response.status === 401) {
+          eventsContainer.innerHTML = `
+            <div class="empty-state">
+              <h3>⚠️ Autenticação necessária</h3>
+              <p>Você precisa fazer logout e login novamente para obter permissões do Google Calendar</p>
+              <a href="http://localhost:3000/auth/logout" style="display: inline-block; margin-top: 20px; padding: 12px 24px; background: #e74c3c; color: white; text-decoration: none; border-radius: 8px; font-weight: 600;">
+                🚪 Logout e Login Novamente
+              </a>
+            </div>
+          `;
+          return;
+        }
+        
+        if (response.status === 403) {
+          eventsContainer.innerHTML = `
+            <div class="empty-state">
+              <h3>🔒 Permissões Insuficientes</h3>
+              <p>Você fez login antes de adicionar permissões do Google Calendar.</p>
+              <p style="margin-top: 10px;">Faça <strong>logout e login novamente</strong> para autorizar o acesso ao calendário.</p>
+              <a href="http://localhost:3000/auth/logout" style="display: inline-block; margin-top: 20px; padding: 12px 24px; background: #e74c3c; color: white; text-decoration: none; border-radius: 8px; font-weight: 600;">
+                🚪 Fazer Logout e Login
+              </a>
+            </div>
+          `;
+          return;
+        }
+        
+        if (!response.ok) {
+          const errorData = await response.json();
+          
+          // Se o erro for de permissões insuficientes
+          if (errorData.message && errorData.message.includes('authentication scopes')) {
+            eventsContainer.innerHTML = `
+              <div class="empty-state">
+                <h3>🔒 Permissões Insuficientes</h3>
+                <p>Você fez login antes de adicionar permissões do Google Calendar.</p>
+                <p style="margin-top: 10px;">Faça <strong>logout e login novamente</strong> para autorizar o acesso ao calendário.</p>
+                <a href="http://localhost:3000/auth/logout" style="display: inline-block; margin-top: 20px; padding: 12px 24px; background: #e74c3c; color: white; text-decoration: none; border-radius: 8px; font-weight: 600;">
+                  🚪 Logout e Login Novamente
+                </a>
+              </div>
+            `;
+            return;
+          }
+          
+          throw new Error(errorData.message || 'Erro ao buscar eventos');
+        }
+        
+        const events = await response.json();
+        console.log('✅ Eventos recebidos:', events.length);
+        
+        eventsContainer.innerHTML = '';
+        
+        if (events.length === 0) {
+          eventsContainer.innerHTML = `
+            <div class="empty-state">
+              <h3>📅 Nenhum evento encontrado</h3>
+              <p>Clique no botão + para criar seu primeiro evento</p>
+            </div>
+          `;
+          return;
+        }
+        
+        events.forEach(event => {
+          const card = document.createElement('div');
+          card.className = 'event-card';
+          
+          const startTime = event.start?.dateTime || event.start?.date;
+          const endTime = event.end?.dateTime || event.end?.date;
+          
+          card.innerHTML = `
+            <div class="event-title">${event.summary || 'Sem título'}</div>
+            ${event.description ? `<div class="event-description">${event.description}</div>` : ''}
+            <div class="event-time">
+              <span>🕒 ${formatDisplayDateTime(startTime)}</span>
+              ${endTime ? `<span>→ ${formatDisplayDateTime(endTime)}</span>` : ''}
+            </div>
+            <div class="event-actions">
+              <button class="btn btn-danger btn-small delete-btn" data-event-id="${event.id}">🗑️ Excluir</button>
+            </div>
+          `;
+          
+          // Event listener para deletar
+          card.querySelector('.delete-btn').addEventListener('click', () => deleteEvent(event.id));
+          
+          eventsContainer.appendChild(card);
+        });
+        
+        console.log('✅ Eventos renderizados');
+        
+      } catch (error) {
+        console.error('❌ Erro ao buscar eventos:', error);
+        eventsContainer.innerHTML = `
+          <div class="empty-state">
+            <p style="color: #e74c3c;">❌ Erro ao carregar eventos: ${error.message}</p>
+          </div>
+        `;
+      }
+    }
+    
+    // Criar evento
+    createForm.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      
+      const formData = {
+        titulo: document.getElementById('create-titulo').value,
+        descricao: document.getElementById('create-descricao').value,
+        data_inicio: new Date(document.getElementById('create-data-inicio').value).toISOString(),
+        data_fim: new Date(document.getElementById('create-data-fim').value).toISOString()
+      };
+      
+      try {
+        const response = await fetch(`${API_URL}/calendario/eventos`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify(formData)
+        });
+        
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.message || 'Erro ao criar evento');
+        }
+        
+        alert('✅ Evento criado no Google Calendar com sucesso!');
+        createForm.reset();
+        createDialog.close();
+        
+        // Recarrega a lista de eventos
+        fetchEvents();
+      } catch (error) {
+        alert('❌ Erro: ' + error.message);
+        console.error('Erro ao criar evento:', error);
+      }
+    });
+    
+    // Deletar evento
+    async function deleteEvent(eventId) {
+      if (!confirm('🗑️ Tem certeza que deseja excluir este evento?')) return;
+      
+      try {
+        const response = await fetch(`${API_URL}/calendario/eventos/${eventId}`, {
+          method: 'DELETE',
+          credentials: 'include'
+        });
+        
+        if (!response.ok) {
+          throw new Error('Falha ao excluir evento');
+        }
+        
+        alert('✅ Evento excluído com sucesso!');
+        fetchEvents();
+      } catch (error) {
+        alert('❌ Erro: ' + error.message);
+        console.error('Erro ao deletar evento:', error);
+      }
+    }
+    
+    // Carregar eventos ao abrir a página
+    document.addEventListener('DOMContentLoaded', () => {
+      console.log('🚀 Página carregada, iniciando...');
+      fetchEvents();
+    });
+  </script>
+  <script src="assets/js/script.js" defer></script>
+</body>
+</html>

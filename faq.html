@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="no-js">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>BabyCare — Dúvidas Frequentes</title>
+  <meta name="description" content="Perguntas e respostas sobre o uso do app e rotinas.">
+  <link rel="stylesheet" href="./assets/css/style.css">
+  <link rel="stylesheet" href="./assets/css/responsive.css">
+  <link rel="stylesheet" href="./assets/css/animation.css">
+  <style>
+    .faq-wrap{background:#f5eef5;border:1.5px solid #00000025;border-radius:18px;box-shadow:var(--shadow);overflow:hidden}
+    .faq-head{display:flex;align-items:center;justify-content:space-between;padding:10px 12px;background:linear-gradient(#b68fe0,#7a3cff);color:#1d1033}
+    .faq-title{font-weight:800;letter-spacing:.02em}
+    .faq-body{padding:10px;background:#fff}
+    details.faq-item{border:1px solid #00000018;border-radius:12px;background:#fff;margin:8px 0;overflow:hidden}
+    details.faq-item[open]{box-shadow:0 6px 16px rgba(0,0,0,.08)}
+    .faq-q{cursor:pointer;list-style:none;padding:12px 14px;font-weight:800;background:linear-gradient(#d6a674,#d29d6c);color:#1d160e}
+    .faq-a{padding:12px 14px;color:#333;background:#fff}
+  </style>
+</head>
+<body>
+  <header class="bc-header">
+    <div class="bc-header__wrap">
+      <a class="bc-icon-btn" href="index.html" aria-label="Voltar ao menu">
+        <img src="./assets/img/icons/sair.png" alt="Voltar"/>
+      </a>
+      <h1 class="bc-header__title">DÚVIDAS FREQUENTES</h1>
+      <div class="bc-user-info" style="display: flex; align-items: center; gap: 10px;">
+        <span id="user-name-header" style="color: white; font-size: 14px; font-weight: 500;">Visitante</span>
+        <img id="user-avatar" src="" alt="Avatar do usuário" style="width: 40px; height: 40px; border-radius: 50%; border: 2px solid white; display: none;" />
+      </div>
+    </div>
+  </header>
+
+  <main class="bc-main">
+    <section class="reveal">
+      <div class="faq-wrap">
+        <div class="faq-head">
+          <div class="faq-title">Perguntas comuns</div>
+          <div class="faq-cta" style="display:flex;gap:8px">
+            <button class="bc-icon-btn" data-action="quick-add" aria-label="Nova pergunta">+</button>
+          </div>
+        </div>
+        <div class="faq-body">
+          <details class="faq-item">
+            <summary class="faq-q">Como adiciono um novo responsável?</summary>
+            <div class="faq-a">No menu principal, toque em Configurações → Responsáveis → Adicionar. Defina permissões e convide por e‑mail ou link.</div>
+          </details>
+
+          <details class="faq-item">
+            <summary class="faq-q">É possível cadastrar mais de uma criança?</summary>
+            <div class="faq-a">Sim. No cartão verde, toque em “+” para criar um novo perfil. Você pode alternar entre as crianças na própria tela.</div>
+          </details>
+
+          <details class="faq-item">
+            <summary class="faq-q">Como registro alergias e restrições alimentares?</summary>
+            <div class="faq-a">Acesse Comida → Alergias/Restrições e edite a lista. Essas informações aparecem para todos os responsáveis autorizados.</div>
+          </details>
+
+          <details class="faq-item">
+            <summary class="faq-q">Os dados ficam só no meu celular?</summary>
+            <div class="faq-a">Você pode usar localmente, mas também sincronizar em nuvem para backup e compartilhamento com familiares e escola.</div>
+          </details>
+
+          <details class="faq-item">
+            <summary class="faq-q">Posso receber alertas?</summary>
+            <div class="faq-a">Sim. Ative notificações para lembretes de remédios, eventos no calendário e mudanças de localização relevantes.</div>
+          </details>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <aside class="bc-ribbon" role="note">
+    <p>Toque em uma pergunta para expandir.</p>
+  </aside>
+
+  <button class="bc-fab" id="btn-fab" aria-label="Ação rápida" data-action="quick-add">+</button>
+
+  <script>
+    // Script para carregar dados do usuário se estiver logado
+    (async function() {
+      try {
+        const response = await fetch('http://localhost:3000/auth/user', {
+          credentials: 'include'
+        });
+        if (response.ok) {
+          const user = await response.json();
+          document.getElementById('user-name-header').textContent = user.nome || user.email;
+          if (user.foto) {
+            const avatar = document.getElementById('user-avatar');
+            avatar.src = user.foto;
+            avatar.style.display = 'block';
+          }
+        }
+      } catch (error) {
+        console.log('Usuário não autenticado');
+      }
+    })();
+  </script>
+  <script src="./assets/js/script.js" defer></script>
+</body>
+</html>

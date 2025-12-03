@@ -1,0 +1,141 @@
+/* =============================
+   BabyCare — style.css (base)
+   Paleta e estilo conforme o wireframe
+   Estrutura de pastas:
+   /css/style.css | /css/responsive.css | /css/animation.css
+   /js/script.js  | /img/... | /paginas/...
+============================= */
+
+/* ------------------ Variáveis de tema ------------------ */
+:root{
+  /* Cores principais */
+  --bg: #e9dfdb;                 /* fundo pastel do app */
+  --bg-2: #d3cbc7;               /* variação p/ fundo */
+  --fg: #221f26;                 /* texto principal */
+  --muted: #5d5866;              /* texto secundário */
+
+  --brand-grad-from:#7a3cff;     /* gradiente do HEADER (esq) */
+  --brand-grad-to:#39b9ff;       /* gradiente do HEADER (dir) */
+
+  --card: #d29d6c;               /* base dos cards (marrom claro) */
+  --card-top: #c6885a;           /* topo ligeiramente mais escuro */
+  --card-footer:#cc5f63;         /* faixa inferior rosada/avermelhada */
+
+  --panel: #c6dfbf;              /* cartão verde da criança */
+  --panel-stroke:#2b2b2b3a;      /* contorno sutil */
+
+  --accent:#ff7b5c;              /* botões/fab */
+  --accent-2:#ffb35c;            /* hover/variante */
+
+  --shadow: 0 10px 30px rgba(0,0,0,.20);
+  --radius-lg: 22px;
+  --radius-md: 16px;
+  --radius-sm: 12px;
+  --container: 980px;            /* largura máxima na vertical */
+}
+
+/* ------------------ Reset e base ------------------ */
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Inter, Arial, sans-serif;
+  color:var(--fg);
+  /* Fundo com bolhas abstratas em camadas, semelhante ao seu wireframe */
+  background:
+    radial-gradient(120px 120px at 20% 24%, #c9b1aa 0%, transparent 60%),
+    radial-gradient(150px 150px at 70% 18%, #bfa0d0 0%, transparent 62%),
+    radial-gradient(160px 160px at 45% 52%, #b5b0df 0%, transparent 60%),
+    radial-gradient(200px 200px at 78% 68%, #e6c48e 0%, transparent 60%),
+    linear-gradient(0deg, var(--bg-2), var(--bg));
+}
+img{max-width:100%;height:auto;display:block}
+button{font:inherit}
+a{color:inherit}
+
+/* Acessibilidade */
+.skip-link{position:absolute;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden}
+.skip-link:focus{position:fixed;left:16px;top:16px;padding:10px 12px;background:#000;color:#fff;z-index:999}
+
+/* Contêiner central (opcional — a tela do wireframe é estreita) */
+.bc-main{width:min(100%, var(--container));margin-inline:auto;padding:14px 14px 96px}
+
+/* ------------------ HEADER ------------------ */
+.bc-header{position:sticky;top:0;z-index:1000;padding:8px 10px}
+.bc-header__wrap{
+  display:flex;align-items:center;justify-content:space-between;
+  background: linear-gradient(90deg, var(--brand-grad-from), var(--brand-grad-to));
+  border: 2px solid #00000050; color:#130d21;
+  border-radius: 999px; padding:10px 14px; box-shadow: var(--shadow);
+}
+.bc-header__title{margin:0;font-weight:800;letter-spacing:.08em;font-size:1.3rem;color:#1a0933;text-shadow:0 1px 0 rgba(255,255,255,.25)}
+
+.bc-icon-btn{display:inline-grid;place-items:center;gap:0;width:42px;height:32px;border-radius:999px;border:1.5px solid #00000040;background:rgba(255,255,255,.2);box-shadow:inset 0 2px 0 rgba(255,255,255,.25);cursor:pointer}
+.bc-icon-btn img{width:18px;height:18px}
+.bc-icon-btn:active{transform:translateY(1px)}
+
+/* ------------------ GRID de atalhos ------------------ */
+.bc-shortcuts{margin-top:18px}
+.bc-grid{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:18px}
+
+.bc-card{position:relative}
+.bc-card__link{
+  display:grid;grid-template-rows:auto 36px;align-items:end;gap:8px;
+  border-radius:14px;overflow:hidden;box-shadow: var(--shadow);
+  background: linear-gradient(#d6a674,#d29d6c 56%);
+  border:1px solid #00000030; text-decoration:none;
+}
+.bc-card__link:focus-visible{outline:3px solid #000;outline-offset:3px}
+.bc-card__icon{width:64px;height:64px;margin:18px auto 6px auto;filter: drop-shadow(0 6px 6px rgba(0,0,0,.15))}
+.bc-card__title{
+  display:block;text-align:center;font-weight:700;font-size:.92rem;color:#fff;
+  padding:8px 6px;background: linear-gradient(#d86f79,#cc5f63);
+  border-top:1px solid #00000025
+}
+
+/* ------------------ Cartão da criança ------------------ */
+.bc-child{margin-top:12px}
+.bc-child__card{
+  position:relative;background:var(--panel);border-radius:18px;padding:14px 14px 18px;
+  border:1.5px solid var(--panel-stroke); box-shadow: var(--shadow);
+}
+.bc-child__head{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center}
+.bc-child__avatar{width:58px;height:58px;border-radius:14px;overflow:hidden;border:1px solid #00000033;background:#fff;display:grid;place-items:center}
+.bc-child__avatar img{width:44px;height:44px}
+.bc-child__meta{min-width:0}
+.bc-child__name{margin:0;font-size:1rem;font-weight:800}
+.bc-child__pills{display:flex;gap:8px}
+.bc-child__pills img{width:26px;height:26px;filter: drop-shadow(0 3px 6px rgba(0,0,0,.2))}
+
+.bc-child__body{display:flex;align-items:center;justify-content:space-between;margin-top:10px}
+.bc-child__label{margin:0;font-weight:700}
+
+/* Botão mini dentro do cartão */
+.bc-fab--mini{position:absolute;right:10px;bottom:10px;width:34px;height:34px;border-radius:50%;border:none;color:#222;background:linear-gradient(#ffd17a,#ffa45f);box-shadow: var(--shadow);cursor:pointer}
+.bc-fab--mini:active{transform:translateY(1px)}
+
+/* ------------------ Ribbon inferior ------------------ */
+.bc-ribbon{
+  position:fixed;left:0;right:0;bottom:0;z-index:900;
+  display:grid;place-items:center;height:42px;padding:0 10px;
+  color:#fff;background: linear-gradient(180deg, #2f0e0e, #3f0f10);
+  border-top:3px solid #00000070; text-align:center;
+}
+.bc-ribbon p{margin:0;font-weight:700;font-size:.9rem}
+
+/* ------------------ FAB global ------------------ */
+.bc-fab{
+  position:fixed;right:14px;bottom:56px;z-index:950;width:48px;height:48px;border-radius:50%;
+  border:2px solid #00000055;background: radial-gradient(60% 60% at 40% 25%, #ffd6a0 0%, #ff8b5d 65%);
+  box-shadow: var(--shadow); color:#1c1a1a; font-weight:900; cursor:pointer;
+}
+.bc-fab:active{transform:translateY(1px)}
+
+/* ------------------ Utilidades ------------------ */
+.hidden{display:none !important}
+.center{text-align:center}
+
+/* Tipografia geral */
+.bc-card__title, .bc-child__name, .bc-child__label, .bc-header__title{font-family: inherit}
+
+/* Links dentro dos cards não mudam de cor ao tocar */
+.bc-card__link{-webkit-tap-highlight-color: rgba(0,0,0,0)}

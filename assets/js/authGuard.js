@@ -23,7 +23,7 @@
             loginButton.addEventListener('click', () => {
                 // Redireciona para a rota de autenticação do Google no backend
                 // Esta é a rota definida em authRoutes.js
-                window.location.href = `${API_BASE}/auth/google`;
+                window.location.href = `${API_BASE}/api/auth/google`;
             });
         }
     }

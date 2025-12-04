@@ -136,7 +136,7 @@
       updateUserHeader(user);
     } else {
       // Se não encontrar, busca na API
-      fetch('http://localhost:3000/auth/user', { credentials: 'include' })
+      fetch('https://babycare-api.onrender.com/auth/user', { credentials: 'include' })
         .then(res => res.json())
         .then(userData => {
           if (userData && userData.nome) {

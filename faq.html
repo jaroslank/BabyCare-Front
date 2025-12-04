@@ -83,7 +83,7 @@
     // Script para carregar dados do usuário se estiver logado
     (async function() {
       try {
-        const response = await fetch('http://localhost:3000/auth/user', {
+        const response = await fetch('https://babycare-api.onrender.com/auth/user', {
           credentials: 'include'
         });
         if (response.ok) {

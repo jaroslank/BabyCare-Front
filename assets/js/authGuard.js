@@ -8,7 +8,7 @@
  */
  (function () {
     // Aponta para o seu Back-end
-    const API_BASE = 'http://localhost:3000';
+    const API_BASE = 'https://babycare-api.onrender.com';
 
     // Suas páginas do front-end
     const LOGIN_PAGE = 'login.html';
